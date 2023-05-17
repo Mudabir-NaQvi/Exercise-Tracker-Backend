@@ -3,19 +3,22 @@ const cookieParser = require("cookie-parser");
 const User = require("./Models/userSchema");
 require("dotenv").config();
 const authRoutes = require("./Routes/authRoutes");
+const userRoutes = require("./Routes/userRoutes");
 const authenticate = require("./Middleware/auth");
+const cors = require("cors");
 const app = express();
 
 // connecting to db
 require("./config/db");
 
 // middleware to parse json data
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 
 // router level middleware
 app.use("/api/v1/auth/", authRoutes);
-
+app.use("/api/v1/users/", userRoutes);
 // redirect the user - / homepage
 app.get("/", (req, res) => {
   res.redirect("/api/v1/");

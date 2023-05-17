@@ -54,7 +54,7 @@ const loginUser = async (req, res) => {
   return res
     .status(200)
     .cookie("access_token", token, options)
-    .json({ message: "User logged in successfully" });
+    .json({ message: "User logged in successfully", token });
 };
 
 const logoutUser = (req, res) => {
