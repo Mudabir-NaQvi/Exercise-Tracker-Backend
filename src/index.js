@@ -52,3 +52,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running at localhost:${PORT || 5000}`);
 });
+
+// PORT=5000
+// MONGO_URI="mongodb+srv://tariqhussainchang363:tariq4899@cluster0.pu8kxbs.mongodb.net/Exercise-Tracker-DB?retryWrites=true&w=majority"
+// JWT_SECRET='156127149f708022f919795b95e4fd6022b4c6874843c490df5535956d28f443dcd2fa92b2b3189c0161d66bcb465fa0230e6f94ba1a84c66e10950b2fc183dd' 
