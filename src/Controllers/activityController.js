@@ -62,9 +62,41 @@ const getActivityById = async (req, res) => {
     }
 }
 
+const updateActivity = async (req, res) => {
+    try {
+        // get id of activity from request
+        const id = req.params.id
+        // get updated data from body
+        const body = req.body
+        // update the activity
+        await Activity.findByIdAndUpdate(id, body, { new: true })
+        res.json({ message: "activity updated successfully" })
+    } catch (error) {
+        res.status(404).json({ message: "Please provide the valid data!" })
+    }
+}
+
+const getActivitiesByType = async (req, res) => {
+    try {
+        const activityType = req.query.activityType
+        // find the id of the activity type 
+        const activityId = await ActivityType.findOne({ activityType: activityType })
+        // find the activities of the type
+        const activities = await Activity.find({ activityType: activityId }).populate("activityType")
+        res.json(activities)
+    }
+    catch (err) {
+        console.log(err)
+        res.status(404).json({ message: "Activity type does not exist!" })
+    }
+}
+
+
 module.exports = {
     createActivity,
     GetAllActivitiesOfUser,
     deleteActivity,
-    getActivityById
+    getActivityById,
+    updateActivity,
+    getActivitiesByType
 }
