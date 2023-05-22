@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
 });
 
 // homepage
-app.get("/api/v1/", authenticate, async (req, res) => {
+app.get("/api/v1/*", authenticate, async (req, res) => {
   res.send("Welcome to Homepage");
 });
 

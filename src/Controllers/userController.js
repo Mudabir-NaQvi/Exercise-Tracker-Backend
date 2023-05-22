@@ -4,4 +4,10 @@ const getUsers = async (req, res) => {
   res.send(users);
 };
 
-module.exports = { getUsers };
+const getUser = async (req, res) => {
+  const {id} = req.params;
+
+  res.json(await User.findById(id))
+}
+
+module.exports = { getUsers,getUser };

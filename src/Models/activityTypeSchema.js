@@ -5,7 +5,8 @@ const activityTypeSchema = new mongoose.Schema({
         type: String,
         required: true,
         max: 25
-    }
+    },
+
 })
 
 const ActivityType = mongoose.model("ActivityType", activityTypeSchema)

@@ -91,6 +91,33 @@ const getActivitiesByType = async (req, res) => {
     }
 }
 
+const getRecentActivities = async (req, res) => {
+    try {
+        // find all type of activities
+        const activityTypes = await ActivityType.find();
+        // every object returns a promise 
+        const result = await Promise.all(
+            // iterate over all types
+            activityTypes.map(async (type) => {
+                // find the total activities of a each type
+                const activityCount = await Activity.countDocuments({ activityType: type._id });
+                // find the last recent activity
+                const last = await Activity.findOne({ activityType: type._id }).sort("-date");
+                // return the object
+                return {
+                    activityType: type.activityType,
+                    count: activityCount,
+                    lastDate: last ? last.date : null
+                };
+            })
+        );
+        res.json(result);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Error!" })
+    }
+}
+
 
 module.exports = {
     createActivity,
@@ -98,5 +125,7 @@ module.exports = {
     deleteActivity,
     getActivityById,
     updateActivity,
-    getActivitiesByType
+    getActivitiesByType,
+    getRecentActivities
+
 }
