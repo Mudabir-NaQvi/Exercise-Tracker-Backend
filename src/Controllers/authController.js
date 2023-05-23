@@ -50,11 +50,13 @@ const loginUser = async (req, res) => {
     expires: new Date(Date.now() + 60 * 60 * 1000), // expires after 1 hour
     httpOnly: true, // only manipulated in a server
   };
+
+  const { firstName } = user
   // store a token in a cookie with response
   return res
     .status(200)
     .cookie("access_token", token, options)
-    .json({ message: "User logged in successfully",user, token,  });
+    .json({ message: "User logged in successfully",firstName, token, });
 };
 
 const logoutUser = (req, res) => {

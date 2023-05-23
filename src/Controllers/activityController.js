@@ -9,6 +9,8 @@ const createActivity = async (req, res) => {
         const activityId = await ActivityType.findOne({ activityType });
         // if activity does not exist return 404
         if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
+        // if the date is less than the current date return 400
+        if (new Date(date) < Date.now()) return res.status(400).json({ message: "please check the date!" })
         // create the activity
         const userActivity = new Activity({
             description,
