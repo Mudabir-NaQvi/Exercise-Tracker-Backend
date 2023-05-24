@@ -1,21 +1,34 @@
 const Activity = require("../Models/activitySchema");
 const ActivityType = require("../Models/activityTypeSchema");
 const User = require("../Models/userSchema")
-
+const moment = require("moment")
 const createActivity = async (req, res) => {
     try {
-        const { description, date, duration, activityType } = req.body
+        let { description, date, duration, activityType } = req.body
+        // get current date
+        const today = new Date()
+        // set hour to zero for comparison
+        today.setHours(0, 0, 0, 0);
+        // parse date into date object
+        date = new Date(date)
+        // set hour to zero for comparison
+        date.setHours(0, 0, 0, 0);
+        // moment module duration object for formatting date time 
+        const momentDuration = moment.duration(duration, "minutes")
+        // formatting received duration into minutes and hours
+        const formattedDuration = moment.utc(momentDuration.asMilliseconds()).format("H[h] m[m]")
         // find the id of the activity type 
         const activityId = await ActivityType.findOne({ activityType });
         // if activity does not exist return 404
         if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
+        // console.log(new Date(Date.now()).toLocaleDateString(), date.toLocaleDateString())
         // if the date is less than the current date return 400
-        if (new Date(date) < Date.now()) return res.status(400).json({ message: "please check the date!" })
+        if (date < today) return res.status(400).json({ message: "please check the date!" })
         // create the activity
         const userActivity = new Activity({
             description,
             date,
-            duration,
+            duration: formattedDuration,
             activityType: activityId,
             user: req.user.id
         })
@@ -23,6 +36,7 @@ const createActivity = async (req, res) => {
         await userActivity.save();
         res.json({ message: "created successfully" })
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: error.message })
     }
 }
@@ -58,7 +72,11 @@ const getActivityById = async (req, res) => {
         // find the activity details
         const activity = await Activity.findById(id)
             .populate("activityType")
-        res.json(activity)
+        // spread document into new object for modification 
+        const response = { ...activity._doc }
+        // modify the activity type object to just return the name
+        response.activityType = activity.activityType[0].activityType
+        res.json(response)
     } catch (error) {
         res.status(404).json({ message: "Activity does not exist!" })
     }
@@ -66,12 +84,36 @@ const getActivityById = async (req, res) => {
 
 const updateActivity = async (req, res) => {
     try {
+        let { description, date, duration, activityType } = req.body
+        // get current date
+        const today = new Date()
+        // set hour to zero for comparison
+        today.setHours(0, 0, 0, 0);
+        // parse date into date object
+        date = new Date(date)
+        // set hour to zero for comparison
+        date.setHours(0, 0, 0, 0);
+        // moment module duration object for formatting date time 
+        const momentDuration = moment.duration(duration, "minutes")
+        // formatting received duration into minutes and hours
+        const formattedDuration = moment.utc(momentDuration.asMilliseconds()).format("H[h] m[m]")
+        // find the id of the activity type 
+        const activityId = await ActivityType.findOne({ activityType });
+        // if activity does not exist return 404
+        if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
+        // console.log(new Date(Date.now()).toLocaleDateString(), date.toLocaleDateString())
+        // if the date is less than the current date return 400
+        if (date < today) return res.status(400).json({ message: "please check the date!" })
         // get id of activity from request
         const id = req.params.id
-        // get updated data from body
-        const body = req.body
-        // update the activity
-        await Activity.findByIdAndUpdate(id, body, { new: true })
+        // find and update 
+        await Activity.findByIdAndUpdate(id, {
+            description,
+            date,
+            duration: formattedDuration,
+            activityType: activityId,
+            user: req.user.id
+        }, { new: true })
         res.json({ message: "activity updated successfully" })
     } catch (error) {
         res.status(404).json({ message: "Please provide the valid data!" })
