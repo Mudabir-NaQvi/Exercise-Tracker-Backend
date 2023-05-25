@@ -94,7 +94,7 @@ const updateActivity = async (req, res) => {
         // set hour to zero for comparison
         date.setHours(0, 0, 0, 0);
         // moment module duration object for formatting date time 
-        const momentDuration = moment.duration(duration, "minutes")
+        const momentDuration = moment.duration(duration)
         // formatting received duration into minutes and hours
         const formattedDuration = moment.utc(momentDuration.asMilliseconds()).format("H[h] m[m]")
         // find the id of the activity type 
@@ -122,11 +122,12 @@ const updateActivity = async (req, res) => {
 
 const getActivitiesByType = async (req, res) => {
     try {
+        const { id } = req.user
         const activityType = req.query.activityType
         // find the id of the activity type 
         const activityId = await ActivityType.findOne({ activityType: activityType })
         // find the activities of the type
-        const activities = await Activity.find({ activityType: activityId }).populate("activityType")
+        const activities = await Activity.find({ activityType: activityId, user: id }).populate("activityType")
         res.json(activities)
     }
     catch (err) {
