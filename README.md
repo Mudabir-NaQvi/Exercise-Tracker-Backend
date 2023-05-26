@@ -38,10 +38,8 @@ This is the Exercise Tracker Application backend in which we have implemented re
   - Used to format date and time
 ## Getting Started
 
----
-git clone https://github.com/Mudabir-NaQvi/Exercise-Tracker-Backend.git
-
 ```
+git clone https://github.com/Mudabir-NaQvi/Exercise-Tracker-Backend.git
 // install dependenacies
 npm install
 
