@@ -37,10 +37,6 @@ app.get("/", (req, res) => {
   res.redirect("/api/v1/");
 });
 
-// // homepage
-// app.get("/api/v1/", authenticate, async (req, res) => {
-//   res.send("Welcome to Homepage");
-// });
 
 // not found page
 app.get("/api/v1/*", (req, res) => {
