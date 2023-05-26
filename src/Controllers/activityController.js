@@ -138,6 +138,7 @@ const getActivitiesByType = async (req, res) => {
 
 const getRecentActivities = async (req, res) => {
     try {
+        const { id } = req.user
         // find all type of activities
         const activityTypes = await ActivityType.find();
         // every object returns a promise 
@@ -145,7 +146,7 @@ const getRecentActivities = async (req, res) => {
             // iterate over all types
             activityTypes.map(async (type) => {
                 // find the total activities of a each type
-                const activityCount = await Activity.countDocuments({ activityType: type._id });
+                const activityCount = await Activity.countDocuments({ activityType: type._id, user: id });
                 // find the last recent activity
                 const last = await Activity.findOne({ activityType: type._id }).sort("-date");
                 // return the object
