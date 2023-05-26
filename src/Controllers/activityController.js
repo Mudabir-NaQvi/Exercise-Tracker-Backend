@@ -127,7 +127,7 @@ const getActivitiesByType = async (req, res) => {
         // find the id of the activity type 
         const activityId = await ActivityType.findOne({ activityType: activityType })
         // find the activities of the type
-        const activities = await Activity.find({ activityType: activityId, user: id }).populate("activityType")
+        const activities = await Activity.find({ activityType: activityId, user: id }).sort("-_id").populate("activityType")
         res.json(activities)
     }
     catch (err) {
