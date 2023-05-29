@@ -21,7 +21,10 @@ const createActivity = async (req, res) => {
         // find the id of the activity type 
         const activityId = await ActivityType.findOne({ activityType });
         // if activity does not exist return 404
-        if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
+        if (!activityId)
+          return res
+            .status(403)
+            .json({ message: "please select a valid activity type!" });
 
         // create the activity
         const userActivity = new Activity({
