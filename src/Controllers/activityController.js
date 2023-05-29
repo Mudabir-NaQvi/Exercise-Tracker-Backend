@@ -74,7 +74,7 @@ const getActivityById = async (req, res) => {
         // find the activity details
         const activity = await Activity.findById(id)
             .populate("activityType")
-        // spread document into new object for modification 
+        // spread document into new object for top level deep copy modification 
         const response = { ...activity._doc }
         // modify the activity type object to just return the name
         response.activityType = activity.activityType[0].activityType
