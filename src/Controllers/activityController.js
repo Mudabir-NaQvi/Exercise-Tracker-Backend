@@ -1,18 +1,19 @@
 const Activity = require("../Models/activitySchema");
 const ActivityType = require("../Models/activityTypeSchema");
-const User = require("../Models/userSchema")
 const moment = require("moment")
 const createActivity = async (req, res) => {
     try {
         let { description, date, duration, activityType } = req.body
+        
+        const momentDate = moment(date);
         // get current date
-        const today = new Date()
-        // set hour to zero for comparison
-        today.setHours(0, 0, 0, 0);
-        // parse date into date object
-        date = new Date(date)
-        // set hour to zero for comparison
-        date.setHours(0, 0, 0, 0);
+        const currentDate = moment(); 
+        
+        // if the date is less than the current date return 400
+        if(momentDate.isBefore(currentDate)){
+            return res.status(400).json({message: "Cannot set previous date and time"})            
+        }
+
         // moment module duration object for formatting date time 
         const momentDuration = moment.duration(duration, "minutes")
         // formatting received duration into minutes and hours
@@ -21,9 +22,7 @@ const createActivity = async (req, res) => {
         const activityId = await ActivityType.findOne({ activityType });
         // if activity does not exist return 404
         if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
-        // console.log(new Date(Date.now()).toLocaleDateString(), date.toLocaleDateString())
-        // if the date is less than the current date return 400
-        if (date < today) return res.status(400).json({ message: "please check the date!" })
+
         // create the activity
         const userActivity = new Activity({
             description,
@@ -34,7 +33,7 @@ const createActivity = async (req, res) => {
         })
         // save the activity
         await userActivity.save();
-        res.json({ message: "created successfully" })
+        res.status(201).json({ message: "created successfully" })
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: error.message })
@@ -59,7 +58,7 @@ const deleteActivity = async (req, res) => {
         const id = req.params.id
         // find the activity to be deleted
         await Activity.findByIdAndDelete(id)
-        res.json({ message: "activity deleted successfully" })
+        res.status(204).json({ message: "activity deleted successfully" })
     } catch (error) {
         res.status(404).json({ message: "Activity does not exist!" })
     }
@@ -85,28 +84,26 @@ const getActivityById = async (req, res) => {
 const updateActivity = async (req, res) => {
     try {
         let { description, date, duration, activityType } = req.body
+        const momentDate = moment(date);
         // get current date
-        const today = new Date()
-        // set hour to zero for comparison
-        today.setHours(0, 0, 0, 0);
-        // parse date into date object
-        date = new Date(date)
-        // set hour to zero for comparison
-        date.setHours(0, 0, 0, 0);
+        const currentDate = moment(); 
+        // if the date is less than the current date return 400
+        if(momentDate.isBefore(currentDate)){
+            return res.status(400).json({message: "Cannot set previous date and time"})            
+        }
+
         // moment module duration object for formatting date time 
-        const momentDuration = moment.duration(duration)
+        const momentDuration = moment.duration(duration, "minutes")
         // formatting received duration into minutes and hours
         const formattedDuration = moment.utc(momentDuration.asMilliseconds()).format("H[h] m[m]")
         // find the id of the activity type 
         const activityId = await ActivityType.findOne({ activityType });
         // if activity does not exist return 404
         if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
-        // console.log(new Date(Date.now()).toLocaleDateString(), date.toLocaleDateString())
-        // if the date is less than the current date return 400
-        if (date < today) return res.status(400).json({ message: "please check the date!" })
         // get id of activity from request
         const id = req.params.id
-        // find and update 
+       
+        // find and update
         await Activity.findByIdAndUpdate(id, {
             description,
             date,
@@ -127,7 +124,7 @@ const getActivitiesByType = async (req, res) => {
         // find the id of the activity type 
         const activityId = await ActivityType.findOne({ activityType: activityType })
         // find the activities of the type
-        const activities = await Activity.find({ activityType: activityId, user: id }).sort("-_id").populate("activityType")
+        const activities = await Activity.find({ activityType: activityId, user: id }).sort("date").populate("activityType")
         res.json(activities)
     }
     catch (err) {
