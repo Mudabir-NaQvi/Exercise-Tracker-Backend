@@ -27,7 +27,7 @@ const activitySchema = mongoose.Schema({
             ref: "User"
         }
     ]
-
+    
 })
 
 const Activity = mongoose.model("Activity", activitySchema)
