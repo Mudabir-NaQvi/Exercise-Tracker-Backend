@@ -4,14 +4,14 @@ const moment = require("moment")
 const createActivity = async (req, res) => {
     try {
         let { description, date, duration, activityType } = req.body
-        
+
         const momentDate = moment(date);
         // get current date
-        const currentDate = moment(); 
-        
+        const currentDate = moment();
+
         // if the date is less than the current date return 400
-        if(momentDate.isBefore(currentDate)){
-            return res.status(400).json({message: "Cannot set previous date and time"})            
+        if (momentDate.isBefore(currentDate)) {
+            return res.status(400).json({ message: "Cannot set previous date and time" })
         }
 
         // moment module duration object for formatting date time 
@@ -86,10 +86,10 @@ const updateActivity = async (req, res) => {
         let { description, date, duration, activityType } = req.body
         const momentDate = moment(date);
         // get current date
-        const currentDate = moment(); 
+        const currentDate = moment();
         // if the date is less than the current date return 400
-        if(momentDate.isBefore(currentDate)){
-            return res.status(400).json({message: "Cannot set previous date and time"})            
+        if (momentDate.isBefore(currentDate)) {
+            return res.status(400).json({ message: "Cannot set previous date and time" })
         }
 
         // moment module duration object for formatting date time 
@@ -102,7 +102,7 @@ const updateActivity = async (req, res) => {
         if (!activityId) return res.status(404).json({ message: "please select a valid activity type!" })
         // get id of activity from request
         const id = req.params.id
-       
+
         // find and update
         await Activity.findByIdAndUpdate(id, {
             description,
@@ -145,7 +145,7 @@ const getRecentActivities = async (req, res) => {
                 // find the total activities of a each type
                 const activityCount = await Activity.countDocuments({ activityType: type._id, user: id });
                 // find the last recent activity
-                const last = await Activity.findOne({ activityType: type._id }).sort("-date");
+                const last = await Activity.findOne({ activityType: type._id, user: id }).sort("-date");
                 // return the object
                 return {
                     activityType: type.activityType,

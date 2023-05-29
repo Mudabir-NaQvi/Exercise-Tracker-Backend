@@ -51,7 +51,7 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: "User does not exist" });
     }
     // generate a token
-    const token = jwt.sign({ id: user._id, email }, process.env.JWT_SECRET);
+    const token = `Bearer ${jwt.sign({ id: user._id, email }, process.env.JWT_SECRET)}`;
     // options object for cookie storage
     const options = {
       expires: new Date(Date.now() + 60 * 60 * 1000), // expires after 1 hour

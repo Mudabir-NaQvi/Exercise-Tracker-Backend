@@ -8,7 +8,8 @@ const authenticate = (req, res, next) => {
   if (access_token) {
     // verify the token
     try {
-      const decode = jwt.verify(access_token, process.env.JWT_SECRET);
+      const token = access_token.split(" ")[1]
+      const decode = jwt.verify(token, process.env.JWT_SECRET);
       // setting a user to a payload object
       req.user = decode;
     } catch (error) {
@@ -23,7 +24,8 @@ const authenticate = (req, res, next) => {
     if (access_token_header) {
       // verify the token
       try {
-        const decode = jwt.verify(access_token_header, process.env.JWT_SECRET);
+        const token = access_token_header.split(" ")[1]
+        const decode = jwt.verify(token, process.env.JWT_SECRET);
         // setting a user to a payload object
         req.user = decode;
       } catch (error) {
