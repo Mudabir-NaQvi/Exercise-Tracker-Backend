@@ -45,9 +45,13 @@ const loginUser = async (req, res) => {
     if (!(email && password)) {
       return res.status(403).json({ message: "Please fill all the fields" });
     }
-    // find a user and compare passwords
-    const user = await User.findOne({ email });
-    if (!(user && (await bcrypt.compare(password, user.password)))) {
+    // find a user 
+    const user = await User.findOne({email: email});
+
+    // compare passwords
+    const isUser = (await bcrypt.compare(password, user.password))
+
+    if (!isUser) {
       return res.status(404).json({ message: "User does not exist" });
     }
     // generate a token
@@ -63,7 +67,7 @@ const loginUser = async (req, res) => {
     return res
       .status(200)
       .cookie("access_token", token, options)
-      .json({ message: "User logged in successfully", firstName, token, });
+      .json({ message: "User logged in successfully", user, token });
   } catch (error) {
     return res.status(500).json({ message: "Server error" });
   }
